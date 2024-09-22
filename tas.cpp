@@ -1,3 +1,24 @@
+/*
+C++考核大作业
+实现完成战队考勤系统，要求如下
+1. 程序开始时通过⽂件输⼊初始信息，在程序运⾏时能够新增、删除队员信息，并能根据学号查询队
+员信息（学号、姓名、打卡次数、打卡记录、总⼯作时间），打卡记录按照⽇期顺序打印，或者按
+照学号顺序打印所有队员信息(学号、姓名、打卡次数)，能将队员信息导出成⽂件。
+2. 队员信息输⼊格式
+学号、姓名、打卡次数、打卡记录（打卡⽇期/打卡时间）
+6666 yjy 2 2024.9.20 8:10~21:30 2024.9.21 7:45~22:20
+7777 zsx 3 2024.9.20 7:00~21:00 2024.9.21 9:00~22:00 2024.9.22 8:30~20:00
+学号为4位数⽆符号整型[1000, 9999]
+姓名为不定⻓度的字符串
+姓名为不定⻓度的字符串
+打卡次数范围 [0, 65536]
+打卡记录格式 year.month.day come:time~leave:time，⽇期时间简化处理为每⽉均为30天
+注意为一次性输入上述内容，然后自行进行字符串处理。
+3. 输⼊某⾏信息记录格式有误时（包括未按格式输⼊、学号冲突、打卡次数与打卡记录不匹配、打卡
+时间超出范围如：25:61等）应当打印报错，并且跳过错误记录，同时接受其余正确信息。
+4. 单个队员信息以及打卡记录要求使⽤类的⽅式保存。
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -5,6 +26,7 @@
 using namespace std;
 
 #define FILENAME "teamFile.txt"
+
 
 // 打卡记录类
 class Record
@@ -14,19 +36,17 @@ public:
     string m_comeTime;
     string m_leaveTime;
 
-    Record() 
-    : m_Date(""), m_comeTime(""), m_leaveTime("")
-    {}
-
     Record(string date, string comeTime, string leaveTime)
     : m_Date(date), m_comeTime(comeTime), m_leaveTime(leaveTime)
     {}
 
+    // 显示单条记录
     void showRecord()
     {
         std::cout << m_Date << " " << m_comeTime << "~" << m_leaveTime << endl;
     }
 };
+
 
 // 成员类
 class Member
@@ -49,6 +69,7 @@ public:
         }
     }
 
+    // 显示基本信息
     void showInfo()
     {
         std::cout << "学号：" << m_Id
@@ -57,6 +78,7 @@ public:
             << "\t总工作时间：" << timeToStr(m_workTime) << endl;
     }
 
+    // 显示详细打卡记录
     void showRecord()
     {
         if (m_Times > 0)
@@ -69,6 +91,7 @@ public:
         }
     }
 
+    // 将工作时间转换为相应的字符串输出
     string timeToStr(int workTime)
     {
         int hours = workTime / 60;
@@ -92,6 +115,7 @@ public:
         return oss.str();
     }
 };
+
 
 // 管理类
 class AttendanceSystem
@@ -118,7 +142,7 @@ public:
     // 添加成员信息
     void addMember();
 
-    // 统计人数
+    // 统计文件内人数
     int getMemberNum();
 
     // 初始化成员
@@ -157,6 +181,7 @@ public:
     // 验证输入日期的合法性
     bool isValidDate(const string& inStr);
 };
+
 
 AttendanceSystem::AttendanceSystem()
 {
